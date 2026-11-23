@@ -55,6 +55,17 @@ La primera vez que arranca cada servicio se cargan datos de prueba. Si se quiere
 cuatro bases `pagoflex_*` en MySQL y volver a levantar los servicios (los datos de prueba dependen unos de otros,
 por eso conviene borrar las cuatro juntas).
 
+## Documentación con Swagger
+
+Cada microservicio publica su documentación OpenAPI y se puede probar desde el navegador:
+
+| Servicio | Swagger UI |
+|---|---|
+| usuarios-service | http://localhost:8081/swagger-ui.html |
+| compromisos-service | http://localhost:8082/swagger-ui.html |
+| pagos-service | http://localhost:8083/swagger-ui.html |
+| reportes-service | http://localhost:8084/swagger-ui.html |
+
 ## Cuentas de prueba
 
 Todas usan la contraseña `123456`.
@@ -147,12 +158,26 @@ Los errores responden con `{"message": "..."}` y la app muestra ese texto.
 | GET | `/api/reportes/{id}/foto` | Ver la foto |
 | DELETE | `/api/reportes/{id}/foto` | Quitar la foto |
 
-## Pruebas unitarias
+## Pruebas unitarias y cobertura
 
-Cada servicio tiene pruebas de su `Service` (con Mockito) y de su `Controller` (con MockMvc): 31 en total
-(usuarios 9, compromisos 8, pagos 6, reportes 8). Se ejecutan con clic derecho en `src/test/java` →
-*Run 'All Tests'*, o con `mvn test`.
+Cada servicio tiene pruebas de su `Service` y de sus clientes WebClient (con Mockito), de su `Controller` (con MockMvc),
+del almacenamiento de fotos, de los datos iniciales y de las utilidades.
 
+| Servicio | Pruebas | Cobertura de líneas |
+|---|---|---|
+| usuarios-service | 41 | 96% |
+| compromisos-service | 40 | 99% |
+| pagos-service | 26 | 98% |
+| reportes-service | 38 | 97% |
+
+La cobertura se mide con JaCoCo. En cada servicio:
+
+```
+mvn verify
+```
+
+Ejecuta las pruebas, genera el informe en `target/site/jacoco/index.html` y falla si la cobertura de líneas baja
+del 80%. En IntelliJ también se puede usar clic derecho en `src/test/java` → *Run 'All Tests' with Coverage*.
 ## Notas
 
 - En Spring Boot 4 la propiedad para que el error incluya el mensaje es `spring.web.error.include-message=always`
